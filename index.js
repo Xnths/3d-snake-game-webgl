@@ -63,6 +63,17 @@ var animando = true;
 var umPasso = false;
 
 var board;
+var playerSize = 1;
+const middle = Math.floor(BOARD_SLOTS / 2);
+
+// Posição do jogador na horizontal
+let iX = middle;
+let iY = middle;
+
+// Localização do jogador em relação ao tabuleiro
+let pX = middle;
+let pY = middle;
+let pZ = middle;
 
 window.onload = main;
 
@@ -107,6 +118,37 @@ function atualizaBoard() {
     for (let j = 0; j < 3; j++) {
       for (let k = 0; k < 3; k++) {
         if (board[i][j][k] > 0) board[i][j][k]--;
+      }
+    }
+  }
+}
+
+function desenhaPlayer() {
+  const hue = 0.4;
+  const sat = 1.0;
+  const val = 0.4;
+
+  let ndivs = 2;
+  let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
+
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      for (let k = 0; k < 3; k++) {
+        if (board[i][j][k] > 0 && board[i][j][k] != playerSize) {
+          const esfera = new crieEsfera(ndivs, cor);
+          esfera.init(ndivs);
+          esfera.centro = vec3(k, i, j);
+
+          esfera.rodando = true;
+          esfera.theta = vec3(0, 0, 0);
+          esfera.axis = EIXO_Y_IND;
+          esfera.raio = 0.2;
+          esfera.raioX = 0.2;
+          esfera.raioY = 0.2;
+          esfera.raioZ = 0.2;
+
+          gObjs.push(esfera);
+        }
       }
     }
   }
@@ -173,15 +215,6 @@ function crieInterface() {
   let anguloHorizontal = 0;
   let anguloVertical = 45;
 
-  const middle = Math.floor(BOARD_SLOTS / 2);
-  let iX = middle;
-  let iY = middle;
-
-  // Localização do jogador em relação ao tabuleiro
-  let pX = middle;
-  let pY = middle;
-  let pZ = middle;
-
   document.addEventListener("keydown", (event) => {
     const tecla = event.key;
     const player = gObjs[0];
@@ -194,8 +227,8 @@ function crieInterface() {
         iX++;
 
         atualizaBoard();
-        board[pX][pY - 1][pZ]++;
-        pY--;
+        board[pZ][pX - 1][pY] = playerSize;
+        pX--;
       }
     } else if (tecla === "s") {
       if (iX > 0) {
@@ -203,8 +236,8 @@ function crieInterface() {
         iX--;
 
         atualizaBoard();
-        board[pX][pY + 1][pZ]++;
-        pY++;
+        board[pZ][pX + 1][pY] = playerSize;
+        pX++;
       }
     } else if (tecla === "a") {
       if (iY > 0) {
@@ -212,8 +245,8 @@ function crieInterface() {
         iY--;
 
         atualizaBoard();
-        board[pX][pY][pZ - 1]++;
-        pZ--;
+        board[pZ][pX][pY - 1] = playerSize;
+        pY--;
       }
     } else if (tecla === "d") {
       if (iY < BOARD_SLOTS - 1) {
@@ -221,8 +254,8 @@ function crieInterface() {
         iY++;
 
         atualizaBoard();
-        board[pX][pY][pZ + 1]++;
-        pZ++;
+        board[pZ][pX][pY + 1] = playerSize;
+        pY++;
       }
     } else if (tecla === "ArrowDown") {
       anguloHorizontal = Math.max(anguloHorizontal - CAMERA_STEP, -89);
