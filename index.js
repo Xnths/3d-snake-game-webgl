@@ -62,6 +62,8 @@ var gShader = {
 var animando = true;
 var umPasso = false;
 
+var board;
+
 window.onload = main;
 
 function main() {
@@ -70,6 +72,7 @@ function main() {
   if (!gl) alert("Vixe! Não achei WebGL 2.0 aqui :-(");
 
   crieInterface();
+  crieBoard();
 
   addPlayer();
   addFruit();
@@ -78,11 +81,35 @@ function main() {
   gl.clearColor(FUNDO[0], FUNDO[1], FUNDO[2], FUNDO[3]);
   gl.enable(gl.DEPTH_TEST);
 
-  // shaders
   crieShaders();
-
-  // finalmente...
   render();
+}
+
+function crieBoard() {
+  const array3D = [];
+
+  for (let i = 0; i < 3; i++) {
+    array3D[i] = [];
+    for (let j = 0; j < 3; j++) {
+      array3D[i][j] = [];
+      for (let k = 0; k < 3; k++) {
+        array3D[i][j][k] = 0;
+      }
+    }
+  }
+
+  board = array3D;
+  board[1][1][1] = 1;
+}
+
+function atualizaBoard() {
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      for (let k = 0; k < 3; k++) {
+        if (board[i][j][k] > 0) board[i][j][k]--;
+      }
+    }
+  }
 }
 
 function addPlayer() {
@@ -124,23 +151,6 @@ function addFruit() {
   esfera.raioY = 0.2;
   esfera.raioZ = 0.2;
   gObjs.push(esfera);
-
-  const hueLeaf = 0;
-  const satLeaf = 1.0;
-  const valLeaf = 0.8;
-
-  let ndivsLeaf = 1;
-  let corLeaf = vec4(...hsv2rgb(hueLeaf, satLeaf, valLeaf), 1.0);
-  const leaf = new crieEsfera(ndivsLeaf, corLeaf);
-  leaf.init(ndivsLeaf);
-  leaf.centro = vec3(0, 0, 0.65);
-
-  leaf.theta = vec3(0, 0, 0);
-  leaf.raio = 0.05;
-  leaf.raioX = 0.05;
-  leaf.raioY = 0.1;
-  leaf.raioZ = 0.05;
-  gObjs.push(leaf);
 }
 
 function crieInterface() {
@@ -167,6 +177,11 @@ function crieInterface() {
   let iX = middle;
   let iY = middle;
 
+  // Localização do jogador em relação ao tabuleiro
+  let pX = middle;
+  let pY = middle;
+  let pZ = middle;
+
   document.addEventListener("keydown", (event) => {
     const tecla = event.key;
     const player = gObjs[0];
@@ -177,21 +192,37 @@ function crieInterface() {
       if (iX < BOARD_SLOTS - 1) {
         player.centro[1] -= passo + padding;
         iX++;
+
+        atualizaBoard();
+        board[pX][pY - 1][pZ]++;
+        pY--;
       }
     } else if (tecla === "s") {
       if (iX > 0) {
         player.centro[1] += passo + padding;
         iX--;
+
+        atualizaBoard();
+        board[pX][pY + 1][pZ]++;
+        pY++;
       }
     } else if (tecla === "a") {
       if (iY > 0) {
         player.centro[0] += passo + padding;
         iY--;
+
+        atualizaBoard();
+        board[pX][pY][pZ - 1]++;
+        pZ--;
       }
     } else if (tecla === "d") {
       if (iY < BOARD_SLOTS - 1) {
         player.centro[0] -= passo + padding;
         iY++;
+
+        atualizaBoard();
+        board[pX][pY][pZ + 1]++;
+        pZ++;
       }
     } else if (tecla === "ArrowDown") {
       anguloHorizontal = Math.max(anguloHorizontal - CAMERA_STEP, -89);
@@ -215,6 +246,19 @@ function crieInterface() {
     const novoEye = vec3(x, y, z);
     gCtx.view = lookAt(novoEye, at, up);
     gl.uniformMatrix4fv(gShader.uView, false, flatten(gCtx.view));
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        let linha = "";
+        for (let k = 0; k < 3; k++) {
+          linha += board[i][j][k];
+        }
+        console.log(linha);
+      }
+      if (i < 2) {
+        console.log("-----");
+      }
+    }
 
     // Força renderização
     if (!animando) render();
