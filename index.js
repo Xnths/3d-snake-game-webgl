@@ -182,12 +182,17 @@ function addFruit() {
   let x = Math.floor(Math.random() * limit);
   let y = Math.floor(Math.random() * limit);
   let z = Math.floor(Math.random() * limit);
+  z = 1;
 
   if (x == middle && y == middle && z == middle) {
-    board[1][x + 1][y] = -1;
+    board[z][x - 1][y] = -1;
+    x = x - 1;
   } else {
-    board[1][x][y] = -1;
+    board[z][x][y] = -1;
   }
+
+  console.log(x, y, 1);
+  console.log(x - middle, y - middle, 1);
 
   printBoard();
 
@@ -199,7 +204,7 @@ function addFruit() {
   let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
   const esfera = new crieEsfera(ndivs, cor);
   esfera.init(ndivs);
-  esfera.centro = vec3(0, -0.45, 0);
+  esfera.centro = vec3((y - 1) * -0.45, (x - 1) * 0.45, (z - 1) * 0.45);
 
   esfera.theta = vec3(0, 0, 0);
   esfera.raio = 0.2;
@@ -237,6 +242,10 @@ function crieInterface() {
 
     if (tecla === "w") {
       if (iX < BOARD_SLOTS - 1) {
+        if (board[pZ][pX - 1][pY] == -1) {
+          playerSize++;
+        }
+
         player.centro[1] -= passo + padding;
         iX++;
 
