@@ -177,6 +177,20 @@ function addPlayer() {
 }
 
 function addFruit() {
+  const limit = BOARD_SLOTS - 1;
+  const middle = Math.floor(BOARD_SLOTS / 2);
+  let x = Math.floor(Math.random() * limit);
+  let y = Math.floor(Math.random() * limit);
+  let z = Math.floor(Math.random() * limit);
+
+  if (x == middle && y == middle && z == middle) {
+    board[1][x + 1][y] = -1;
+  } else {
+    board[1][x][y] = -1;
+  }
+
+  printBoard();
+
   const hue = 0;
   const sat = 1.0;
   const val = 1.0;
@@ -185,7 +199,7 @@ function addFruit() {
   let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
   const esfera = new crieEsfera(ndivs, cor);
   esfera.init(ndivs);
-  esfera.centro = vec3(0, 0, 0.4);
+  esfera.centro = vec3(0, -0.45, 0);
 
   esfera.theta = vec3(0, 0, 0);
   esfera.raio = 0.2;
@@ -280,22 +294,25 @@ function crieInterface() {
     gCtx.view = lookAt(novoEye, at, up);
     gl.uniformMatrix4fv(gShader.uView, false, flatten(gCtx.view));
 
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        let linha = "";
-        for (let k = 0; k < 3; k++) {
-          linha += board[i][j][k];
-        }
-        console.log(linha);
-      }
-      if (i < 2) {
-        console.log("-----");
-      }
-    }
+    printBoard();
 
-    // Força renderização
     if (!animando) render();
   });
+}
+
+function printBoard() {
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      let linha = "";
+      for (let k = 0; k < 3; k++) {
+        linha += board[i][j][k];
+      }
+      console.log(linha);
+    }
+    if (i < 2) {
+      console.log("-----");
+    }
+  }
 }
 
 function crieShaders() {
