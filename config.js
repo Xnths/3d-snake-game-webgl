@@ -104,6 +104,33 @@ function render() {
     gl.vertexAttribPointer(aNormal, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(aNormal);
 
+    gl.uniform1i(
+      gl.getUniformLocation(gShader.program, "uTemTextura"),
+      obj.temTextura
+    );
+
+    const locCor = gl.getUniformLocation(gShader.program, "uCor");
+    const locTemTextura = gl.getUniformLocation(gShader.program, "uTemTextura");
+
+    if (obj.temTextura) {
+      gl.uniform1i(locTemTextura, true);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, obj.texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+      gl.uniform1i(gl.getUniformLocation(gShader.program, "uTexture"), 0);
+
+      const locTex = gl.getAttribLocation(gShader.program, "aTexCoord");
+      gl.bindBuffer(gl.ARRAY_BUFFER, obj.bufTexCoords);
+      gl.vertexAttribPointer(locTex, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(locTex);
+    } else {
+      gl.uniform1i(locTemTextura, false);
+      gl.uniform4fv(locCor, obj.cor);
+
+      const locTex = gl.getAttribLocation(gShader.program, "aTexCoord");
+      gl.disableVertexAttribArray(locTex);
+    }
+
     if (obj.rodando) obj.theta[obj.axis] += 0.5;
 
     novosObjs.push(obj);
@@ -163,6 +190,7 @@ var gVertexShaderSrc = `#version 300 es
 
 in  vec3 aPosition;
 in  vec3 aNormal;
+in vec2 aTexCoord;
 
 uniform mat4 uModel;
 uniform mat4 uView;
@@ -174,6 +202,7 @@ uniform vec4 uLuzPos;
 out vec3 vNormal;
 out vec3 vLight;
 out vec3 vView;
+out vec2 vTexCoord;
 
 void main() {
     mat4 modelView = uView * uModel;
@@ -185,6 +214,7 @@ void main() {
 
     vLight = (uView * uLuzPos - pos).xyz;
     vView = -(pos.xyz);
+    vTexCoord = aTexCoord;
 }
 `;
 
@@ -195,32 +225,39 @@ precision highp float;
 in vec3 vNormal;
 in vec3 vLight;
 in vec3 vView;
+in vec2 vTexCoord;
 out vec4 corSaida;
+
 
 // cor = produto luz * material
 uniform vec4 uCorAmbiente;
 uniform vec4 uCorDifusaInd;
+uniform sampler2D uSampler;
+uniform bool uTemTextura;
 uniform vec4 uCorEspecular;
 uniform float uAlfaEsp;
 
 void main() {
-    vec3 normalV = normalize(vNormal);
-    vec3 lightV = normalize(vLight);
-    vec3 viewV = normalize(vView);
-    vec3 halfV = normalize(lightV + viewV);
-  
-    // difusao
-    float kd = max(0.0, dot(normalV, lightV) );
-    vec4 difusao = kd * uCorDifusaInd;
+  vec3 normalV = normalize(vNormal);
+  vec3 lightV = normalize(vLight);
+  vec3 viewV = normalize(vView);
+  vec3 halfV = normalize(lightV + viewV);
 
-    // especular
-    float ks = pow(max(0.0, dot(normalV, halfV)), uAlfaEsp);
-    
-    vec4 especular = vec4(0.0);
-    if (kd > 0.0) {  // parte iluminada
-        especular = ks * uCorEspecular;
-    }
-    corSaida = difusao + especular + uCorAmbiente;    
-    corSaida.a = 1.0;
+  // difusao
+  float kd = max(0.0, dot(normalV, lightV) );
+  vec4 difusao = kd * uCorDifusaInd;
+
+  // especular
+  float ks = pow(max(0.0, dot(normalV, halfV)), uAlfaEsp);
+  
+  vec4 especular = vec4(0.0);
+  if (kd > 0.0) {  // parte iluminada
+    especular = ks * uCorEspecular;
+  }
+  vec4 texColor = texture(uSampler, vTexCoord);
+  vec4 corFinal = uTemTextura ? texColor : uCorDifusaInd;
+
+  corSaida = corFinal * kd + especular + uCorAmbiente;
+  corSaida.a = 1.0;
 }
 `;

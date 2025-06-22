@@ -12,6 +12,11 @@ class Esfera {
     this.ndivs = ndivisoes;
     this.invertida = invertida;
 
+    this.temTextura = false;
+    this.coords = [];
+    this.bufTexCoords = gl.createBuffer();
+    this.texture;
+
     this.cor = cor;
     this.rodando = false;
     this.bufPos = null;
@@ -32,9 +37,19 @@ class Esfera {
   init() {
     this.pos = [];
     this.nor = [];
+    this.coords = [];
 
     for (const [a, b, c] of this.triangulosBase) {
-      dividaTriangulo(this.pos, this.nor, a, b, c, this.ndivs, this.invertida);
+      dividaTriangulo(
+        this.pos,
+        this.nor,
+        a,
+        b,
+        c,
+        this.ndivs,
+        this.invertida,
+        this.coords
+      );
     }
 
     this.np = this.pos.length;
@@ -46,6 +61,12 @@ class Esfera {
     this.bufNor = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufNor);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(this.nor), gl.STATIC_DRAW);
+
+    if (this.temTextura) {
+      this.bufTexCoords = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTexCoords);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(this.coords), gl.STATIC_DRAW);
+    }
   }
 
   escala(escala) {

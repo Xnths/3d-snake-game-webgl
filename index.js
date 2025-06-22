@@ -26,9 +26,13 @@ function criaSkyDome() {
   const sat = 0.7;
   const val = 0.8;
 
-  let ndivs = 5;
+  let ndivs = 6;
   let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
+
   const esfera = new Esfera(ndivs, cor, true);
+  esfera.temTextura = true;
+  esfera.texture = createTexture("./horizon.jpg");
+
   esfera.init();
   esfera.centro = vec3(0, 0, 0);
 

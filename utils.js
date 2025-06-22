@@ -60,38 +60,53 @@ function hsv2rgb(h, s, v) {
   return [r, g, b];
 }
 
-function dividaTriangulo(pos, nor, a, b, c, ndivs, invertida) {
+function dividaTriangulo(pos, nor, a, b, c, ndivs, invertida, coords) {
   if (ndivs > 0) {
-    let ab = mix(a, b, 0.5);
-    let bc = mix(b, c, 0.5);
-    let ca = mix(c, a, 0.5);
+    let ab = normalize(mix(a, b, 0.5));
+    let bc = normalize(mix(b, c, 0.5));
+    let ca = normalize(mix(c, a, 0.5));
 
-    ab = normalize(ab);
-    bc = normalize(bc);
-    ca = normalize(ca);
-
-    dividaTriangulo(pos, nor, a, ab, ca, ndivs - 1, invertida);
-    dividaTriangulo(pos, nor, b, bc, ab, ndivs - 1, invertida);
-    dividaTriangulo(pos, nor, c, ca, bc, ndivs - 1, invertida);
-    dividaTriangulo(pos, nor, ab, bc, ca, ndivs - 1, invertida);
+    dividaTriangulo(pos, nor, a, ab, ca, ndivs - 1, invertida, coords);
+    dividaTriangulo(pos, nor, b, bc, ab, ndivs - 1, invertida, coords);
+    dividaTriangulo(pos, nor, c, ca, bc, ndivs - 1, invertida, coords);
+    dividaTriangulo(pos, nor, ab, bc, ca, ndivs - 1, invertida, coords);
   } else {
     let ab = subtract(b, a);
     let ac = subtract(c, a);
     let normal = normalize(cross(ab, ac));
 
-    if (dot(normal, a) < 0) {
-      normal = negate(normal);
-    }
-
-    if (invertida) {
-      normal = negate(normal);
-    }
+    if (dot(normal, a) < 0) normal = negate(normal);
+    if (invertida) normal = negate(normal);
 
     pos.push(a);
     nor.push(normal);
+    coords.push(texCoordEsferica(a));
+
     pos.push(b);
     nor.push(normal);
+    coords.push(texCoordEsferica(b));
+
     pos.push(c);
     nor.push(normal);
+    coords.push(texCoordEsferica(c));
   }
+}
+
+function createTexture(url) {
+  const texture = gl.createTexture();
+  const image = new Image();
+  image.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+  };
+  image.src = url;
+  return texture;
+}
+
+function texCoordEsferica(p) {
+  let [x, y, z] = normalize(p);
+  let u = 0.5 + Math.atan2(x, y) / (2 * Math.PI);
+  let v = 0.5 - Math.asin(z) / Math.PI;
+  return [u, v];
 }
