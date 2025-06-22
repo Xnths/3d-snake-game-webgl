@@ -8,8 +8,8 @@ const LUZ = {
 };
 
 const MAT = {
-  amb: vec4(0.1, 0.2, 0.8, 1.0),
-  dif: vec4(1.0, 0.5, 1.0, 1.0),
+  amb: vec4(0, 0, 0, 1.0),
+  dif: vec4(1, 0.1, 0.0, 1.0),
   alfa: 100.0,
 };
 
@@ -79,6 +79,8 @@ let pZ = middle;
 
 window.onload = main;
 
+const corAreia = vec4(0.2, 0.87, 0.7, 1.0);
+
 function main() {
   gCanvas = document.getElementById("glcanvas");
   gl = gCanvas.getContext("webgl2");
@@ -89,6 +91,7 @@ function main() {
 
   addPlayer();
   addFruit();
+  criaChao(3, -0.7, corAreia);
 
   gl.viewport(0, 0, gCanvas.width, gCanvas.height);
   gl.clearColor(FUNDO[0], FUNDO[1], FUNDO[2], FUNDO[3]);
@@ -96,6 +99,53 @@ function main() {
 
   crieShaders();
   render();
+}
+
+function criaChao(tamanho = 3, z = 0, cor) {
+  const meio = tamanho / 2;
+
+  const vertices = [
+    vec3(-meio, -meio, z),
+    vec3(-meio, meio, z),
+    vec3(meio, meio, z),
+
+    vec3(-meio, -meio, z),
+    vec3(meio, meio, z),
+    vec3(meio, -meio, z),
+  ];
+
+  const normais = [
+    vec3(0, 0, 1),
+    vec3(0, 0, 1),
+    vec3(0, 0, 1),
+
+    vec3(0, 0, 1),
+    vec3(0, 0, 1),
+    vec3(0, 0, 1),
+  ];
+
+  const plano = {
+    pos: flatten(vertices),
+    nor: flatten(normais),
+    cor: cor,
+    centro: vec3(0, 0, 0),
+    theta: vec3(0, 0, 0),
+    axis: EIXO_Z_IND,
+    rodando: false,
+    raioX: 1.0,
+    raioY: 1.0,
+    raioZ: 1.0,
+  };
+
+  plano.bufPos = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, plano.bufPos);
+  gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+
+  plano.bufNor = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, plano.bufNor);
+  gl.bufferData(gl.ARRAY_BUFFER, flatten(normais), gl.STATIC_DRAW);
+
+  gObjs.push(plano);
 }
 
 function crieBoard() {
@@ -129,7 +179,7 @@ function atualizaBoard() {
 }
 
 function desenhaPlayer() {
-  gObjs = [gObjs[0], fruit];
+  gObjs = [gObjs[0], gObjs[1], gObjs[2]];
 
   const hue = 0.4;
   const sat = 1.0;
@@ -164,7 +214,7 @@ function desenhaPlayer() {
 function addPlayer() {
   const hue = 0.4;
   const sat = 1.0;
-  const val = 0.4;
+  const val = 1.0;
 
   let ndivs = 2;
   let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
@@ -203,7 +253,7 @@ function addFruit() {
 
   printBoard();
 
-  const hue = 0;
+  const hue = 328 / 360;
   const sat = 1.0;
   const val = 1.0;
 
@@ -218,6 +268,7 @@ function addFruit() {
   fruit.raioX = 0.2;
   fruit.raioY = 0.2;
   fruit.raioZ = 0.2;
+
   gObjs.push(fruit);
 }
 
