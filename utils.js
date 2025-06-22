@@ -60,7 +60,7 @@ function hsv2rgb(h, s, v) {
   return [r, g, b];
 }
 
-function dividaTriangulo(pos, nor, a, b, c, ndivs) {
+function dividaTriangulo(pos, nor, a, b, c, ndivs, invertida) {
   if (ndivs > 0) {
     let ab = mix(a, b, 0.5);
     let bc = mix(b, c, 0.5);
@@ -70,16 +70,20 @@ function dividaTriangulo(pos, nor, a, b, c, ndivs) {
     bc = normalize(bc);
     ca = normalize(ca);
 
-    dividaTriangulo(pos, nor, a, ab, ca, ndivs - 1);
-    dividaTriangulo(pos, nor, b, bc, ab, ndivs - 1);
-    dividaTriangulo(pos, nor, c, ca, bc, ndivs - 1);
-    dividaTriangulo(pos, nor, ab, bc, ca, ndivs - 1);
+    dividaTriangulo(pos, nor, a, ab, ca, ndivs - 1, invertida);
+    dividaTriangulo(pos, nor, b, bc, ab, ndivs - 1, invertida);
+    dividaTriangulo(pos, nor, c, ca, bc, ndivs - 1, invertida);
+    dividaTriangulo(pos, nor, ab, bc, ca, ndivs - 1, invertida);
   } else {
     let ab = subtract(b, a);
     let ac = subtract(c, a);
     let normal = normalize(cross(ab, ac));
 
     if (dot(normal, a) < 0) {
+      normal = negate(normal);
+    }
+
+    if (invertida) {
       normal = negate(normal);
     }
 

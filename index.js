@@ -11,6 +11,7 @@ function main() {
   addPlayer();
   addFruit();
   criaChao(3, -0.7, corAreia);
+  criaSkyDome();
 
   gl.viewport(0, 0, gCanvas.width, gCanvas.height);
   gl.clearColor(FUNDO[0], FUNDO[1], FUNDO[2], FUNDO[3]);
@@ -18,6 +19,27 @@ function main() {
 
   crieShaders();
   render();
+}
+
+function criaSkyDome() {
+  const hue = 0.6;
+  const sat = 0.7;
+  const val = 0.8;
+
+  let ndivs = 5;
+  let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
+  const esfera = new Esfera(ndivs, cor, true);
+  esfera.init();
+  esfera.centro = vec3(0, 0, 0);
+
+  esfera.theta = vec3(0, 0, 0);
+  esfera.axis = EIXO_Y_IND;
+  esfera.raio = 4;
+  esfera.raioX = 4;
+  esfera.raioY = 4;
+  esfera.raioZ = 4;
+
+  gObjs.push(esfera);
 }
 
 function criaChao(tamanho = 3, z = 0, cor) {

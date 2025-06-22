@@ -77,6 +77,7 @@ function crieShaders() {
   );
   gl.uniform4fv(gShader.uCorEsp, LUZ.esp);
   gl.uniform1f(gShader.uAlfaEsp, MAT.alfa);
+  gl.disable(gl.CULL_FACE);
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }

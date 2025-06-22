@@ -1,5 +1,5 @@
 class Esfera {
-  constructor(ndivisoes = 2, cor) {
+  constructor(ndivisoes = 2, cor, invertida = false) {
     this.np = 0;
     this.pos = [];
     this.nor = [];
@@ -10,6 +10,7 @@ class Esfera {
     this.raioY = this.raio;
     this.raioZ = this.raio;
     this.ndivs = ndivisoes;
+    this.invertida = invertida;
 
     this.cor = cor;
     this.rodando = false;
@@ -33,7 +34,7 @@ class Esfera {
     this.nor = [];
 
     for (const [a, b, c] of this.triangulosBase) {
-      dividaTriangulo(this.pos, this.nor, a, b, c, this.ndivs);
+      dividaTriangulo(this.pos, this.nor, a, b, c, this.ndivs, this.invertida);
     }
 
     this.np = this.pos.length;
