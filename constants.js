@@ -1,18 +1,5 @@
 "use strict";
 
-const LUZ = {
-  pos: vec4(0.0, 3.0, 2.0, 0.0),
-  amb: vec4(1.0, 1.0, 1.0, 1.0),
-  dif: vec4(1.0, 1.0, 1.0, 1.0),
-  esp: vec4(1.0, 1.0, 1.0, 1.0),
-};
-
-const MAT = {
-  amb: vec4(0, 0, 0, 1.0),
-  dif: vec4(1, 0.1, 0.0, 1.0),
-  alfa: 100.0,
-};
-
 const eye = vec3(2, 2, 0);
 const at = vec3(0, 0, 0);
 const up = vec3(0, 0, 1);
@@ -45,23 +32,6 @@ const EIXO_X = vec3(1, 0, 0);
 const EIXO_Y = vec3(0, 1, 0);
 const EIXO_Z = vec3(0, 0, 1);
 
-var gl;
-var gCanvas;
-
-var gCtx = {
-  view: mat4(),
-  perspective: mat4(),
-};
-
-var gObjs = [];
-
-var gShader = {
-  aTheta: null,
-};
-
-var animando = true;
-var umPasso = false;
-
 var board;
 var playerSize = 1;
 let fruit;
@@ -76,3 +46,5 @@ let iZ = middle;
 let pX = middle;
 let pY = middle;
 let pZ = middle;
+
+const corAreia = vec4(0.2, 0.87, 0.7, 1.0);
