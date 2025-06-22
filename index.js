@@ -119,13 +119,18 @@ function atualizaBoard() {
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       for (let k = 0; k < 3; k++) {
-        if (board[i][j][k] > 0) board[i][j][k]--;
+        if (board[i][j][k] > 0) {
+          board[i][j][k]--;
+        }
       }
     }
   }
+  desenhaPlayer();
 }
 
 function desenhaPlayer() {
+  gObjs = [gObjs[0], fruit];
+
   const hue = 0.4;
   const sat = 1.0;
   const val = 0.4;
@@ -139,7 +144,7 @@ function desenhaPlayer() {
         if (board[i][j][k] > 0 && board[i][j][k] != playerSize) {
           const esfera = new crieEsfera(ndivs, cor);
           esfera.init(ndivs);
-          esfera.centro = vec3(k, i, j);
+          esfera.centro = vec3((k - 1) * -0.45, (j - 1) * 0.45, (i - 1) * 0.45);
 
           esfera.rodando = true;
           esfera.theta = vec3(0, 0, 0);
@@ -223,15 +228,15 @@ function moveFruta() {
   let y = Math.floor(Math.random() * limit);
   let z = Math.floor(Math.random() * limit);
 
-  while (board[z][x][y] > 0 || (x != iX && y != iY && z != iZ)) {
+  while (board[z][x][y] > 0) {
     x = Math.floor(Math.random() * limit);
     y = Math.floor(Math.random() * limit);
     z = Math.floor(Math.random() * limit);
   }
 
-  z = 1;
-
   board[z][x][y] = -1;
+
+  console.log(z, x, y);
 
   fruit.centro = vec3((y - 1) * -0.45, (x - 1) * 0.45, (z - 1) * 0.45);
 }
@@ -264,59 +269,85 @@ function crieInterface() {
 
     if (tecla === "w") {
       if (iX < BOARD_SLOTS - 1) {
-        if (board[pZ][pX - 1][pY] == -1) {
-          playerSize++;
+        pX--;
+        iX++;
+        let hitFruit = board[pZ][pX][pY] == -1;
+
+        if (board[pZ][pX][pY] > 0) {
+          pX++;
+          iX--;
+          return;
         }
 
-        player.centro[1] -= passo + padding;
-        iX++;
+        if (hitFruit) playerSize++;
 
-        if (board[pZ][pX - 1][pY] == -1) moveFruta();
+        player.centro[1] -= passo + padding;
+
         atualizaBoard();
-        board[pZ][pX - 1][pY] = playerSize;
-        pX--;
+        board[pZ][pX][pY] = playerSize;
+        if (hitFruit) moveFruta();
       }
     } else if (tecla === "s") {
       if (iX > 0) {
-        if (board[pZ][pX + 1][pY] == -1) {
-          playerSize++;
-        }
-
-        player.centro[1] += passo + padding;
+        pX++;
         iX--;
 
-        if (board[pZ][pX + 1][pY] == -1) moveFruta();
+        let hitFruit = board[pZ][pX][pY] == -1;
+
+        if (board[pZ][pX][pY] > 0) {
+          pX--;
+          iX++;
+          return;
+        }
+
+        if (board[pZ][pX][pY] == -1) playerSize++;
+
+        player.centro[1] += passo + padding;
+
         atualizaBoard();
-        board[pZ][pX + 1][pY] = playerSize;
-        pX++;
+        board[pZ][pX][pY] = playerSize;
+        if (hitFruit) moveFruta();
       }
     } else if (tecla === "a") {
       if (iY > 0) {
-        if (board[pZ][pX][pY - 1] == -1) {
-          playerSize++;
+        pY--;
+        iY--;
+        let hitFruit = board[pZ][pX][pY] == -1;
+
+        if (hitFruit) playerSize++;
+
+        if (board[pZ][pX][pY] > 0) {
+          pY++;
+          iY++;
+          return;
         }
 
         player.centro[0] += passo + padding;
-        iY--;
 
-        if (board[pZ][pX][pY - 1] == -1) moveFruta();
         atualizaBoard();
-        board[pZ][pX][pY - 1] = playerSize;
-        pY--;
+        board[pZ][pX][pY] = playerSize;
+        if (hitFruit) moveFruta();
       }
     } else if (tecla === "d") {
       if (iY < BOARD_SLOTS - 1) {
-        if (board[pZ][pX][pY - 1] == -1) {
-          playerSize++;
-        }
-
-        player.centro[0] -= passo + padding;
+        pY++;
         iY++;
 
-        if (board[pZ][pX][pY - 1] == -1) moveFruta();
+        let hitFruit = board[pZ][pX][pY] == -1;
+
+        if (board[pZ][pX][pY] > 0) {
+          pY--;
+          iY--;
+          return;
+        }
+
+        if (hitFruit) playerSize++;
+
+        player.centro[0] -= passo + padding;
+
         atualizaBoard();
-        board[pZ][pX][pY + 1] = playerSize;
-        pY++;
+        board[pZ][pX][pY] = playerSize;
+        if (hitFruit) moveFruta();
       }
     } else if (tecla === "ArrowDown") {
       anguloHorizontal = Math.max(anguloHorizontal - CAMERA_STEP, -89);
@@ -348,11 +379,12 @@ function crieInterface() {
 }
 
 function printBoard() {
+  console.log("=====================================");
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       let linha = "";
       for (let k = 0; k < 3; k++) {
-        linha += board[i][j][k];
+        linha += " " + board[i][j][k];
       }
       console.log(linha);
     }
@@ -360,6 +392,7 @@ function printBoard() {
       console.log("-----");
     }
   }
+  console.log("=====================================");
 }
 
 function crieShaders() {
@@ -636,7 +669,7 @@ void main() {
     vec4 difusao = kd * uCorDifusaInd;
 
     // especular
-    float ks = pow( max(0.0, dot(normalV, halfV)), uAlfaEsp);
+    float ks = pow(max(0.0, dot(normalV, halfV)), uAlfaEsp);
     
     vec4 especular = vec4(0.0);
     if (kd > 0.0) {  // parte iluminada
