@@ -1,26 +1,9 @@
-class Esfera {
+class Esfera extends Objeto {
   constructor(ndivisoes = 2, cor, invertida = false) {
-    this.np = 0;
-    this.pos = [];
-    this.nor = [];
-    this.centro = vec3(0.0, 0.0, 0.0);
-    this.velocidade = vec3(0, 0, 0);
-    this.raio = 0.2;
-    this.raioX = this.raio;
-    this.raioY = this.raio;
-    this.raioZ = this.raio;
+    super(cor);
+
     this.ndivs = ndivisoes;
     this.invertida = invertida;
-
-    this.temTextura = false;
-    this.coords = [];
-    this.bufTexCoords = gl.createBuffer();
-    this.texture;
-
-    this.cor = cor;
-    this.rodando = false;
-    this.bufPos = null;
-    this.bufNor = null;
 
     this.triangulosBase = [
       [BALAO_CANTOS[0], BALAO_CANTOS[1], BALAO_CANTOS[2]],
@@ -67,11 +50,5 @@ class Esfera {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTexCoords);
       gl.bufferData(gl.ARRAY_BUFFER, flatten(this.coords), gl.STATIC_DRAW);
     }
-  }
-
-  escala(escala) {
-    this.raioX = escala[0];
-    this.raioY = escala[1];
-    this.raioZ = escala[2];
   }
 }
