@@ -349,6 +349,48 @@ function crieInterface() {
         board[pZ][pX][pY] = playerSize;
         if (hitFruit) moveFruta();
       }
+    } else if (tecla === "e") {
+      if (iZ < BOARD_SLOTS - 1) {
+        pZ++;
+        iZ++;
+
+        let hitFruit = board[pZ][pX][pY] == -1;
+
+        if (board[pZ][pX][pY] > 0) {
+          pZ--;
+          iZ--;
+          return;
+        }
+
+        if (hitFruit) playerSize++;
+
+        player.centro[2] += passo + padding;
+
+        atualizaBoard();
+        board[pZ][pX][pY] = playerSize;
+        if (hitFruit) moveFruta();
+      }
+    } else if (tecla === "c") {
+      if (iZ > 0) {
+        pZ--;
+        iZ--;
+
+        let hitFruit = board[pZ][pX][pY] == -1;
+
+        if (board[pZ][pX][pY] > 0) {
+          pZ++;
+          iZ++;
+          return;
+        }
+
+        if (hitFruit) playerSize++;
+
+        player.centro[2] -= passo + padding;
+
+        atualizaBoard();
+        board[pZ][pX][pY] = playerSize;
+        if (hitFruit) moveFruta();
+      }
     } else if (tecla === "ArrowDown") {
       anguloHorizontal = Math.max(anguloHorizontal - CAMERA_STEP, -89);
     } else if (tecla === "ArrowUp") {
