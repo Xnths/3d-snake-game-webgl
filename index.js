@@ -10,7 +10,7 @@ function main() {
 
   addPlayer();
   addFruit();
-  criaChao(3, -0.7, corAreia);
+  criaChao(8, -0.7, corAreia);
   criaSkyDome();
 
   gl.viewport(0, 0, gCanvas.width, gCanvas.height);
@@ -22,7 +22,7 @@ function main() {
 }
 
 function criaSkyDome() {
-  const hue = 0.6;
+  const hue = 0.61;
   const sat = 0.7;
   const val = 0.8;
 
