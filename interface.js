@@ -149,7 +149,7 @@ function crieInterface() {
         if (hitFruit) moveFruta();
       }
     } else if (tecla === "ArrowDown") {
-      anguloHorizontal = Math.max(anguloHorizontal - CAMERA_STEP, -89);
+      anguloHorizontal = Math.max(anguloHorizontal - CAMERA_STEP, -10);
     } else if (tecla === "ArrowUp") {
       anguloHorizontal = Math.min(anguloHorizontal + CAMERA_STEP, 89);
     } else if (tecla === "ArrowRight") {
