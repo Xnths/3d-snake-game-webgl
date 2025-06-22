@@ -120,7 +120,7 @@ function atualizaBoard() {
 }
 
 function desenhaPlayer() {
-  gObjs = [gObjs[0], gObjs[1], gObjs[2]];
+  gObjs = [gObjs[0], gObjs[1], gObjs[2], gObjs[3]];
 
   const hue = 0.4;
   const sat = 1.0;
