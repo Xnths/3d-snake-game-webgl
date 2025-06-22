@@ -64,11 +64,13 @@ var umPasso = false;
 
 var board;
 var playerSize = 1;
+let fruit;
 const middle = Math.floor(BOARD_SLOTS / 2);
 
 // Posição do jogador na horizontal
 let iX = middle;
 let iY = middle;
+let iZ = middle;
 
 // Localização do jogador em relação ao tabuleiro
 let pX = middle;
@@ -202,16 +204,36 @@ function addFruit() {
 
   let ndivs = 2;
   let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
-  const esfera = new crieEsfera(ndivs, cor);
-  esfera.init(ndivs);
-  esfera.centro = vec3((y - 1) * -0.45, (x - 1) * 0.45, (z - 1) * 0.45);
+  fruit = new crieEsfera(ndivs, cor);
+  fruit.init(ndivs);
+  fruit.centro = vec3((y - 1) * -0.45, (x - 1) * 0.45, (z - 1) * 0.45);
 
-  esfera.theta = vec3(0, 0, 0);
-  esfera.raio = 0.2;
-  esfera.raioX = 0.2;
-  esfera.raioY = 0.2;
-  esfera.raioZ = 0.2;
-  gObjs.push(esfera);
+  fruit.theta = vec3(0, 0, 0);
+  fruit.raio = 0.2;
+  fruit.raioX = 0.2;
+  fruit.raioY = 0.2;
+  fruit.raioZ = 0.2;
+  gObjs.push(fruit);
+}
+
+function moveFruta() {
+  console.log("moveu");
+  const limit = BOARD_SLOTS - 1;
+  let x = Math.floor(Math.random() * limit);
+  let y = Math.floor(Math.random() * limit);
+  let z = Math.floor(Math.random() * limit);
+
+  while (board[z][x][y] > 0 || (x != iX && y != iY && z != iZ)) {
+    x = Math.floor(Math.random() * limit);
+    y = Math.floor(Math.random() * limit);
+    z = Math.floor(Math.random() * limit);
+  }
+
+  z = 1;
+
+  board[z][x][y] = -1;
+
+  fruit.centro = vec3((y - 1) * -0.45, (x - 1) * 0.45, (z - 1) * 0.45);
 }
 
 function crieInterface() {
@@ -249,33 +271,49 @@ function crieInterface() {
         player.centro[1] -= passo + padding;
         iX++;
 
+        if (board[pZ][pX - 1][pY] == -1) moveFruta();
         atualizaBoard();
         board[pZ][pX - 1][pY] = playerSize;
         pX--;
       }
     } else if (tecla === "s") {
       if (iX > 0) {
+        if (board[pZ][pX + 1][pY] == -1) {
+          playerSize++;
+        }
+
         player.centro[1] += passo + padding;
         iX--;
 
+        if (board[pZ][pX + 1][pY] == -1) moveFruta();
         atualizaBoard();
         board[pZ][pX + 1][pY] = playerSize;
         pX++;
       }
     } else if (tecla === "a") {
       if (iY > 0) {
+        if (board[pZ][pX][pY - 1] == -1) {
+          playerSize++;
+        }
+
         player.centro[0] += passo + padding;
         iY--;
 
+        if (board[pZ][pX][pY - 1] == -1) moveFruta();
         atualizaBoard();
         board[pZ][pX][pY - 1] = playerSize;
         pY--;
       }
     } else if (tecla === "d") {
       if (iY < BOARD_SLOTS - 1) {
+        if (board[pZ][pX][pY - 1] == -1) {
+          playerSize++;
+        }
+
         player.centro[0] -= passo + padding;
         iY++;
 
+        if (board[pZ][pX][pY - 1] == -1) moveFruta();
         atualizaBoard();
         board[pZ][pX][pY + 1] = playerSize;
         pY++;
