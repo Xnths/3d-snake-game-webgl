@@ -8,10 +8,30 @@ function crieInterface() {
     }
   };
 
-  document.getElementById("bStep").onclick = function () {
-    if (!animando) {
-      umPasso = true;
-      render();
+  document.getElementById("showBoard").onclick = function () {
+    showBoard = !showBoard;
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        for (let k = 0; k < 3; k++) {
+          let cube = new Cubo(
+            (i + j + k) % 2 === 0
+              ? vec4(...hsv2rgb(0, 0.3, 0.2), 1.0)
+              : vec4(...hsv2rgb(0, 0, 0), 0.45)
+          );
+          cube.opacidade = 0.1;
+          cube.init();
+          cube.centro = vec3((k - 1) * -0.45, (j - 1) * 0.45, (i - 1) * 0.45);
+
+          cube.escala(vec3(0.4, 0.4, 0.4));
+
+          gObjs.push(cube);
+        }
+      }
+    }
+
+    if (!showBoard) {
+      gObjs = gObjs.filter((obj) => !(obj instanceof Cubo));
     }
   };
 

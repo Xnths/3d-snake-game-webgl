@@ -13,28 +13,6 @@ function main() {
   criaChao();
   criaSkyDome();
 
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      for (let k = 0; k < 3; k++) {
-        if (board[i][j][k] == 0) {
-          let cube = new Cubo(
-            (i + j + k) % 2 === 0
-              ? vec4(...hsv2rgb(0.1, 0.3, 0.2), 0.3)
-              : vec4(...hsv2rgb(0.8, 1.0, 0.2), 0.5)
-          );
-          cube.translucido = true;
-          cube.init();
-          cube.centro = vec3((k - 1) * -0.45, (j - 1) * 0.45, (i - 1) * 0.45);
-
-          cube.escala(vec3(0.4, 0.4, 0.4));
-          gObjs.push(cube);
-
-          gObjs.push(cube);
-        }
-      }
-    }
-  }
-
   gl.viewport(0, 0, gCanvas.width, gCanvas.height);
   gl.clearColor(FUNDO[0], FUNDO[1], FUNDO[2], FUNDO[3]);
   gl.enable(gl.DEPTH_TEST);
@@ -112,7 +90,7 @@ function atualizaBoard() {
 }
 
 function desenhaPlayer() {
-  gObjs = gObjs.slice(0, 5);
+  gObjs = gObjs.slice(0, 4);
 
   const hue = 0.4;
   const sat = 1.0;

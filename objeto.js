@@ -21,7 +21,7 @@ class Objeto {
     this.bufNor = null;
 
     this.theta = vec3(0, 0, 0);
-    this.translucido = false;
+    this.opacidade = 1.0;
   }
 
   addTexture(url) {

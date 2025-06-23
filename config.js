@@ -48,8 +48,6 @@ function renderSombras() {
   );
 
   for (let obj of gObjs) {
-    if (obj.translucido) continue;
-
     if (obj.rodando) obj.theta[obj.axis] += 0.5;
 
     let model = mat4();
@@ -75,6 +73,11 @@ function renderSombras() {
     let aPosition = gl.getAttribLocation(gShader.shadowProgram, "aPosition");
     gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(aPosition);
+
+    gl.uniform1f(
+      gl.getUniformLocation(gShader.shadowProgram, "uOpacidade"),
+      obj.opacidade
+    );
 
     gl.drawArrays(gl.TRIANGLES, 0, obj.pos.length);
   }
@@ -106,7 +109,7 @@ function render() {
     if (obj.rodando) obj.theta[obj.axis] += 0.5;
     let isSky = obj.isDome ? true : false;
 
-    if (obj.translucido) {
+    if (obj.opacidade != 1.0) {
       gl.depthMask(false);
     } else {
       gl.depthMask(true);
@@ -150,6 +153,9 @@ function render() {
       gl.uniform4fv(gl.getUniformLocation(gShader.program, "uCor"), obj.cor);
       gl.disableVertexAttribArray(locTex);
     }
+
+    let uOpacidade = gl.getUniformLocation(gShader.program, "uOpacidade");
+    gl.uniform1f(uOpacidade, obj.opacidade);
 
     let model = mat4();
     let translacao = translate(obj.centro[0], obj.centro[1], obj.centro[2]);
@@ -255,8 +261,10 @@ void main() {
 
 var shadowFragmentShaderSrc = `#version 300 es
 precision highp float;
+uniform float uOpacidade;
 void main() {
-  gl_FragDepth = gl_FragCoord.z;
+  float transparencia = clamp(uOpacidade, 0.0, 1.0);
+  gl_FragDepth = gl_FragCoord.z + (1.0 - transparencia) * 0.01;
 }`;
 
 var gVertexShaderSrc = `#version 300 es
@@ -307,6 +315,7 @@ uniform vec4 uCorEspecular;
 uniform float uAlfaEsp;
 uniform sampler2D uShadowMap;
 uniform bool uIsSkyDome;
+uniform float uOpacidade;
 
 float sombra(vec4 shadowCoord) {
   vec3 projCoords = shadowCoord.xyz / shadowCoord.w;
@@ -351,6 +360,7 @@ void main() {
     vec4 corFinal = uTemTextura ? texColor : uCorDifusaInd;
 
     float vis = sombra(vShadowCoord);
+    corFinal.a *= uOpacidade;
     corSaida = (corFinal * kd + especular) * vis + uCorAmbiente;
     corSaida.a = corFinal.a;
   }

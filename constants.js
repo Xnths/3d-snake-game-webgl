@@ -78,3 +78,5 @@ let pY = middle;
 let pZ = middle;
 
 const corAreia = vec4(0.2, 0.87, 0.7, 1.0);
+
+var showBoard = false;
