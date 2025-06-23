@@ -31,7 +31,7 @@ function criaSkyDome() {
   let ndivs = 6;
   let cor = vec4(...hsv2rgb(hue, sat, val), 1.0);
 
-  const esfera = new Esfera(ndivs, cor, true);
+  const esfera = new Esfera(ndivs, cor, true, true);
   esfera.temTextura = true;
   esfera.texture = createTexture("./horizon.jpg");
 
@@ -49,7 +49,7 @@ function criaSkyDome() {
 }
 
 function criaChao() {
-  let tamanho = 50;
+  let tamanho = 80;
   let z = -0.7;
   let cor = corAreia;
 

@@ -102,6 +102,8 @@ function render() {
 
   for (let obj of gObjs) {
     if (obj.rodando) obj.theta[obj.axis] += 0.5;
+    let isSky = obj.isDome ? true : false;
+    gl.uniform1i(gl.getUniformLocation(gShader.program, "uIsSkyDome"), isSky);
 
     const corDifusa = mult(LUZ.dif, obj.cor);
     gl.uniform4fv(gShader.uCorDifusaInd, corDifusa);
@@ -292,34 +294,52 @@ uniform bool uTemTextura;
 uniform vec4 uCorEspecular;
 uniform float uAlfaEsp;
 uniform sampler2D uShadowMap;
+uniform bool uIsSkyDome;
 
 float sombra(vec4 shadowCoord) {
   vec3 projCoords = shadowCoord.xyz / shadowCoord.w;
   projCoords = projCoords * 0.5 + 0.5;
-  float closestDepth = texture(uShadowMap, projCoords.xy).r;
-  float currentDepth = projCoords.z;
+
+  if (projCoords.z > 1.0) return 1.0; // fora do range
+
   float bias = 0.005;
-  return currentDepth - bias > closestDepth ? 0.5 : 1.0;
+  float vis = 0.0;
+  float texelSize = 1.0 / 1024.0; // tamanho de texel do shadow map
+
+  for (int x = -1; x <= 1; ++x) {
+    for (int y = -1; y <= 1; ++y) {
+      float pcfDepth = texture(uShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+      vis += projCoords.z - bias > pcfDepth ? 0.0 : 1.0;
+    }
+  }
+
+  vis /= 9.0; // média das 9 amostras
+  return vis;
 }
 
 void main() {
-  vec3 normalV = normalize(vNormal);
-  vec3 lightV = normalize(vLight);
-  vec3 viewV = normalize(vView);
-  vec3 halfV = normalize(lightV + viewV);
+  if (uIsSkyDome) {
+    vec4 texColor = texture(uSampler, vTexCoord);
+    corSaida = vec4(texColor.rgb, 1.0);
+  } else {
+    vec3 normalV = normalize(vNormal);
+    vec3 lightV = normalize(vLight);
+    vec3 viewV = normalize(vView);
+    vec3 halfV = normalize(lightV + viewV);
 
-  float kd = max(0.0, dot(normalV, lightV));
-  vec4 difusao = kd * uCorDifusaInd;
+    float kd = max(0.0, dot(normalV, lightV));
+    vec4 difusao = kd * uCorDifusaInd;
 
-  float ks = pow(max(0.0, dot(normalV, halfV)), uAlfaEsp);
-  vec4 especular = vec4(0.0);
-  if (kd > 0.0) {
-    especular = ks * uCorEspecular;
+    float ks = pow(max(0.0, dot(normalV, halfV)), uAlfaEsp);
+    vec4 especular = vec4(0.0);
+    if (kd > 0.0) {
+      especular = ks * uCorEspecular;
+    }
+    vec4 texColor = texture(uSampler, vTexCoord);
+    vec4 corFinal = uTemTextura ? texColor : uCorDifusaInd;
+
+    float vis = sombra(vShadowCoord);
+    corSaida = (corFinal * kd + especular) * vis + uCorAmbiente;
+    corSaida.a = 1.0;
   }
-  vec4 texColor = texture(uSampler, vTexCoord);
-  vec4 corFinal = uTemTextura ? texColor : uCorDifusaInd;
-
-  float vis = sombra(vShadowCoord);
-  corSaida = (corFinal * kd + especular) * vis + uCorAmbiente;
-  corSaida.a = 1.0;
 }`;

@@ -110,3 +110,16 @@ function texCoordEsferica(p) {
   let v = 0.5 - Math.asin(z) / Math.PI;
   return [u, v];
 }
+
+function texCoordFisheye(p) {
+  let [x, y, z] = normalize(p);
+
+  let theta = Math.atan2(y, x);
+
+  let r = Math.acos(z) / Math.PI;
+
+  let u = 0.5 + r * Math.cos(theta);
+  let v = 0.5 + r * Math.sin(theta);
+
+  return [u, v];
+}

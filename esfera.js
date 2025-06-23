@@ -1,5 +1,5 @@
 class Esfera extends Objeto {
-  constructor(ndivisoes = 2, cor, invertida = false) {
+  constructor(ndivisoes = 2, cor, invertida = false, isDome = false) {
     super(cor);
 
     this.ndivs = ndivisoes;
@@ -15,6 +15,8 @@ class Esfera extends Objeto {
       [BALAO_CANTOS[3], BALAO_CANTOS[4], BALAO_CANTOS[2]],
       [BALAO_CANTOS[3], BALAO_CANTOS[4], BALAO_CANTOS[5]],
     ];
+
+    this.isDome = isDome;
   }
 
   init() {
