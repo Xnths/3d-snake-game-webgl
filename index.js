@@ -33,7 +33,7 @@ function criaSkyDome() {
 
   const esfera = new Esfera(ndivs, cor, true, true);
   esfera.temTextura = true;
-  esfera.texture = createTexture("./horizon.png");
+  esfera.texture = createTexture("./assets/horizon.png");
 
   esfera.init();
   esfera.centro = vec3(0, 0, -0.9);
@@ -55,7 +55,7 @@ function criaChao() {
 
   const plano = new Plano(tamanho, z, cor);
   plano.init();
-  plano.addTexture("sand.jpg");
+  plano.addTexture("./assets/sand.jpg");
   gObjs.push(plano);
 }
 
