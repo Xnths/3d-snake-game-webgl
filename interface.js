@@ -148,6 +148,9 @@ function crieInterface() {
         board[pZ][pX][pY] = playerSize;
         if (hitFruit) moveFruta();
       }
+    } else if (tecla === "q") {
+      anguloHorizontal = 0;
+      anguloVertical = 45;
     } else if (tecla === "ArrowDown") {
       anguloHorizontal = Math.max(anguloHorizontal - CAMERA_STEP, -10);
     } else if (tecla === "ArrowUp") {
