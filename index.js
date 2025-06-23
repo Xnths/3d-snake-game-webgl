@@ -18,6 +18,8 @@ function main() {
   gl.enable(gl.DEPTH_TEST);
 
   crieShaders();
+  configureShadowMap();
+  renderSombras();
   render();
 }
 
