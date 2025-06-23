@@ -1,10 +1,7 @@
-class Cilindro {
+class Cilindro extends Objeto {
   constructor(nLados = 20, nAltura = 1, cor, invertida = false) {
-    this.np = 0;
-    this.pos = [];
-    this.nor = [];
-    this.centro = vec3(0.0, 0.0, 0.0);
-    this.velocidade = vec3(0, 0, 0);
+    super(cor);
+
     this.raio = 0.2;
     this.altura = 0.4;
     this.raioX = this.raio;
@@ -13,11 +10,6 @@ class Cilindro {
     this.nLados = nLados;
     this.nAltura = nAltura;
     this.invertida = invertida;
-
-    this.cor = cor;
-    this.rodando = false;
-    this.bufPos = null;
-    this.bufNor = null;
   }
 
   init() {
@@ -55,7 +47,6 @@ class Cilindro {
       }
     }
 
-    // Base inferior
     const centroInf = vec3(0, -0.5, 0);
     for (let i = 0; i < this.nLados; i++) {
       const theta0 = i * angStep;
@@ -68,7 +59,6 @@ class Cilindro {
       this.nor.push(normal, normal, normal);
     }
 
-    // Base superior
     const centroSup = vec3(0, 0.5, 0);
     for (let i = 0; i < this.nLados; i++) {
       const theta0 = i * angStep;
@@ -90,11 +80,5 @@ class Cilindro {
     this.bufNor = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufNor);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(this.nor), gl.STATIC_DRAW);
-  }
-
-  escala(escala) {
-    this.raioX = escala[0];
-    this.raioY = escala[1];
-    this.raioZ = escala[2];
   }
 }

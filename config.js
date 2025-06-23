@@ -1,52 +1,10 @@
-const LUZ = {
-  pos: vec4(0.0, 3.0, 2.0, 0.0),
-  amb: vec4(1.0, 1.0, 1.0, 1.0),
-  dif: vec4(1.0, 1.0, 1.0, 1.0),
-  esp: vec4(1.0, 1.0, 1.0, 1.0),
-};
-
-const MAT = {
-  amb: vec4(0, 0, 0, 1.0),
-  dif: vec4(1, 0.1, 0.0, 1.0),
-  alfa: 100.0,
-};
-
-var gl;
-var gCanvas;
-
-var gCtx = {
-  view: mat4(),
-  perspective: mat4(),
-};
-
-var gObjs = [];
-
-var gShader = {
-  aTheta: null,
-};
-
-var animando = true;
-var umPasso = false;
-
 function crieShaders() {
   gShader.program = makeProgram(gl, gVertexShaderSrc, gFragmentShaderSrc);
   gl.useProgram(gShader.program);
 
-  var bufNormais = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, bufNormais);
-  gl.bufferData(gl.ARRAY_BUFFER, flatten(gObjs[0].nor), gl.STATIC_DRAW);
-
-  var aNormal = gl.getAttribLocation(gShader.program, "aNormal");
-  gl.vertexAttribPointer(aNormal, 3, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(aNormal);
-
-  var bufVertices = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, bufVertices);
-  gl.bufferData(gl.ARRAY_BUFFER, flatten(gObjs[0].pos), gl.STATIC_DRAW);
-
-  var aPosition = gl.getAttribLocation(gShader.program, "aPosition");
-  gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(aPosition);
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.POLYGON_OFFSET_FILL);
+  gl.polygonOffset(1.0, 1.0);
 
   gShader.uModel = gl.getUniformLocation(gShader.program, "uModel");
   gShader.uView = gl.getUniformLocation(gShader.program, "uView");
@@ -117,7 +75,7 @@ function render() {
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, obj.texture);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-      gl.uniform1i(gl.getUniformLocation(gShader.program, "uTexture"), 0);
+      gl.uniform1i(gl.getUniformLocation(gShader.program, "uSampler"), 0);
 
       const locTex = gl.getAttribLocation(gShader.program, "aTexCoord");
       gl.bindBuffer(gl.ARRAY_BUFFER, obj.bufTexCoords);
@@ -165,11 +123,7 @@ function render() {
       flatten(modelViewInvTrans)
     );
 
-    gl.drawArrays(
-      gl.TRIANGLES,
-      0,
-      gObjs.reduce((soma, obj) => soma + obj.pos.length, 0)
-    );
+    gl.drawArrays(gl.TRIANGLES, 0, obj.pos.length);
   }
 
   gObjs = novosObjs;
@@ -180,11 +134,6 @@ function render() {
     window.requestAnimationFrame(render);
   }
 }
-
-// ========================================================
-// Código fonte dos shaders em GLSL
-// a primeira linha deve conter "#version 300 es"
-// para WebGL 2.0
 
 var gVertexShaderSrc = `#version 300 es
 

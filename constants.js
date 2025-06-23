@@ -1,5 +1,35 @@
 "use strict";
 
+const LUZ = {
+  pos: vec4(0.0, 3.0, 2.0, 0.0),
+  amb: vec4(1.0, 1.0, 1.0, 1.0),
+  dif: vec4(1.0, 1.0, 1.0, 1.0),
+  esp: vec4(1.0, 1.0, 1.0, 1.0),
+};
+
+const MAT = {
+  amb: vec4(0, 0, 0, 1.0),
+  dif: vec4(1, 0.1, 0.0, 1.0),
+  alfa: 100.0,
+};
+
+var gl;
+var gCanvas;
+
+var gCtx = {
+  view: mat4(),
+  perspective: mat4(),
+};
+
+var gObjs = [];
+
+var gShader = {
+  aTheta: null,
+};
+
+var animando = true;
+var umPasso = false;
+
 const eye = vec3(2, 2, 0);
 const at = vec3(0, 0, 0);
 const up = vec3(0, 0, 1);

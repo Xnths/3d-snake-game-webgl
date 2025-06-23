@@ -19,6 +19,13 @@ class Objeto {
     this.rodando = false;
     this.bufPos = null;
     this.bufNor = null;
+
+    this.theta = vec3(0, 0, 0);
+  }
+
+  addTexture(url) {
+    this.temTextura = true;
+    this.texture = createTexture(url);
   }
 
   escala(escala) {

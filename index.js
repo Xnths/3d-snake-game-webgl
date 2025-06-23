@@ -10,7 +10,7 @@ function main() {
 
   addPlayer();
   addFruit();
-  criaChao(8, -0.7, corAreia);
+  criaChao();
   criaSkyDome();
 
   gl.viewport(0, 0, gCanvas.width, gCanvas.height);
@@ -46,50 +46,14 @@ function criaSkyDome() {
   gObjs.push(esfera);
 }
 
-function criaChao(tamanho = 3, z = 0, cor) {
-  const meio = tamanho / 2;
+function criaChao() {
+  let tamanho = 50;
+  let z = -0.7;
+  let cor = corAreia;
 
-  const vertices = [
-    vec3(-meio, -meio, z),
-    vec3(-meio, meio, z),
-    vec3(meio, meio, z),
-
-    vec3(-meio, -meio, z),
-    vec3(meio, meio, z),
-    vec3(meio, -meio, z),
-  ];
-
-  const normais = [
-    vec3(0, 0, 1),
-    vec3(0, 0, 1),
-    vec3(0, 0, 1),
-
-    vec3(0, 0, 1),
-    vec3(0, 0, 1),
-    vec3(0, 0, 1),
-  ];
-
-  const plano = {
-    pos: flatten(vertices),
-    nor: flatten(normais),
-    cor: cor,
-    centro: vec3(0, 0, 0),
-    theta: vec3(0, 0, 0),
-    axis: EIXO_Z_IND,
-    rodando: false,
-    raioX: 1.0,
-    raioY: 1.0,
-    raioZ: 1.0,
-  };
-
-  plano.bufPos = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, plano.bufPos);
-  gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
-
-  plano.bufNor = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, plano.bufNor);
-  gl.bufferData(gl.ARRAY_BUFFER, flatten(normais), gl.STATIC_DRAW);
-
+  const plano = new Plano(tamanho, z, cor);
+  plano.init();
+  plano.addTexture("sand.jpg");
   gObjs.push(plano);
 }
 
