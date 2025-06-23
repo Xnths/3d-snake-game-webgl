@@ -33,10 +33,10 @@ function criaSkyDome() {
 
   const esfera = new Esfera(ndivs, cor, true, true);
   esfera.temTextura = true;
-  esfera.texture = createTexture("./horizon.jpg");
+  esfera.texture = createTexture("./horizon.png");
 
   esfera.init();
-  esfera.centro = vec3(0, 0, 0);
+  esfera.centro = vec3(0, 0, -0.9);
 
   esfera.theta = vec3(0, 0, 0);
   esfera.axis = EIXO_Y_IND;

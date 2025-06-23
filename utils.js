@@ -80,15 +80,15 @@ function dividaTriangulo(pos, nor, a, b, c, ndivs, invertida, coords) {
 
     pos.push(a);
     nor.push(normal);
-    coords.push(texCoordEsferica(a));
+    coords.push(texCoordFisheye(a));
 
     pos.push(b);
     nor.push(normal);
-    coords.push(texCoordEsferica(b));
+    coords.push(texCoordFisheye(b));
 
     pos.push(c);
     nor.push(normal);
-    coords.push(texCoordEsferica(c));
+    coords.push(texCoordFisheye(c));
   }
 }
 
