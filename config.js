@@ -48,6 +48,8 @@ function renderSombras() {
   );
 
   for (let obj of gObjs) {
+    if (obj.translucido) continue;
+
     if (obj.rodando) obj.theta[obj.axis] += 0.5;
 
     let model = mat4();
@@ -103,6 +105,16 @@ function render() {
   for (let obj of gObjs) {
     if (obj.rodando) obj.theta[obj.axis] += 0.5;
     let isSky = obj.isDome ? true : false;
+
+    if (obj.translucido) {
+      gl.depthMask(false);
+    } else {
+      gl.depthMask(true);
+    }
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
     gl.uniform1i(gl.getUniformLocation(gShader.program, "uIsSkyDome"), isSky);
 
     const corDifusa = mult(LUZ.dif, obj.cor);
@@ -340,6 +352,6 @@ void main() {
 
     float vis = sombra(vShadowCoord);
     corSaida = (corFinal * kd + especular) * vis + uCorAmbiente;
-    corSaida.a = 1.0;
+    corSaida.a = corFinal.a;
   }
 }`;

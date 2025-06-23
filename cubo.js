@@ -20,12 +20,12 @@ class Cubo extends Objeto {
     ];
 
     const faces = [
-      [0, 1, 2, 3], // frente
-      [1, 5, 6, 2], // direita
-      [5, 4, 7, 6], // trás
-      [4, 0, 3, 7], // esquerda
-      [3, 2, 6, 7], // topo
-      [4, 5, 1, 0], // base
+      [0, 1, 2, 3],
+      [1, 5, 6, 2],
+      [5, 4, 7, 6],
+      [4, 0, 3, 7],
+      [3, 2, 6, 7],
+      [4, 5, 1, 0],
     ];
 
     const normais = [
